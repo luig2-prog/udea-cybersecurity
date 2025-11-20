@@ -1,0 +1,6 @@
+SELECT TOP (1000) [id]
+      ,[title]
+      ,[description]
+      ,[completed]
+      ,[createdAt]
+  FROM [TasksDB].[dbo].[Tasks]

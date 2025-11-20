@@ -1,0 +1,68 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: iuvity-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=sqlpreview # This is correct for Docker Compose internal networking
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=yourStrong#Password
+      - DB_NAME=TasksDB
+    networks:
+      - iuvity-network
+    depends_on:
+      sqlpreview:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: iuvity-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - iuvity-network
+    restart: unless-stopped
+    environment: # <-- ADD THIS BLOCK
+      - BACKEND_HOST=backend # Docker Compose service name for the backend
+
+  sqlpreview:
+    # <--- CORRECTED INDENTATION
+    build:
+      context: ./db
+      dockerfile: Dockerfile # Dockerfile
+    container_name: sqlpreview
+    hostname: sqlpreview
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=yourStrong#Password
+      - MSSQL_PID=Evaluation
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlpreview-data:/var/opt/mssql
+    networks:
+      - iuvity-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "yourStrong#Password", "-Q", "SELECT 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 45s
+
+networks:
+  iuvity-network:
+    driver: bridge
+
+volumes:
+  sqlpreview-data:

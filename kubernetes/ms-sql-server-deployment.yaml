@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssql-deployment
+  labels:
+    app: mssql-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mssql-server
+  template:
+    metadata:
+      labels:
+        app: mssql-server
+    spec:
+      containers:
+      - name: mssql-server
+        image: iuvity-mssql-server:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1433
+        env:
+          - name: ACCEPT_EULA
+            value: "Y"
+          - name: MSSQL_PID
+            value: "Evaluation"
+          - name: MSSQL_SA_PASSWORD
+            value: "yourStrong#Password"
+        volumeMounts:
+        - name: mssql-data
+          mountPath: /var/opt/mssql
+        resources:
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+      volumes:
+      - name: mssql-data
+        persistentVolumeClaim:
+          claimName: mssql-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-service
+  labels:
+    app: mssql-server
+spec:
+  selector:
+    app: mssql-server
+  ports:
+  - port: 1433
+    targetPort: 1433
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mssql-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi

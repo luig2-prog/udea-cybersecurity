@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iuvity-backend
+  labels:
+    app: iuvity-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iuvity-backend
+  template:
+    metadata:
+      labels:
+        app: iuvity-backend
+    spec:
+      containers:
+      - name: iuvity-backend
+        image: iuvity-backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        env:
+          - name: NODE_ENV
+            value: "production"
+          - name: DB_HOST
+            value: "mssql-service"
+          - name: DB_PORT
+            value: "1433"
+          - name: DB_USER
+            value: "sa"
+          - name: DB_PASSWORD
+            value: "yourStrong#Password"
+          - name: DB_NAME
+            value: "TasksDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iuvity-backend-service
+spec:
+  selector:
+    app: iuvity-backend
+  ports:
+  - port: 3001
+    targetPort: 3001
+  type: ClusterIP

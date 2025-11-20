@@ -1,0 +1,8 @@
+# Node / general
+node_modules/
+dist/
+build/
+coverage/
+
+# Local SonarCloud token file (do NOT commit your token)
+sonar-project.local.properties
