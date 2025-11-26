@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: iuvity-frontend
+  name: bussines-frontend
   labels:
-    app: iuvity-frontend
+    app: bussines-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: iuvity-frontend
+      app: bussines-frontend
   template:
     metadata:
       labels:
-        app: iuvity-frontend
+        app: bussines-frontend
     spec:
       containers:
-      - name: iuvity-frontend
-        image: iuvity-frontend:latest
+      - name: bussines-frontend
+        image: bussines-frontend:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
@@ -29,15 +29,15 @@ spec:
             memory: "128Mi"
         env:
           - name: BACKEND_HOST
-            value: "iuvity-backend-service"
+            value: "bussines-backend-service"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: iuvity-frontend-service
+  name: bussines-frontend-service
 spec:
   selector:
-    app: iuvity-frontend
+    app: bussines-frontend
   ports:
   - port: 80
     targetPort: 80

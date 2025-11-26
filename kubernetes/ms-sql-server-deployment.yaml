@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mssql-server
-        image: iuvity-mssql-server:latest
+        image: bussines-mssql-server:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 1433

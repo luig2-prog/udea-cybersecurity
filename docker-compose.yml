@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: iuvity-backend
+    container_name: bussines-backend
     ports:
       - "3001:3001"
     environment:
@@ -14,7 +14,7 @@ services:
       - DB_PASSWORD=yourStrong#Password
       - DB_NAME=TasksDB
     networks:
-      - iuvity-network
+      - bussines-network
     depends_on:
       sqlpreview:
         condition: service_healthy
@@ -24,13 +24,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: iuvity-frontend
+    container_name: bussines-frontend
     ports:
       - "80:80"
     depends_on:
       - backend
     networks:
-      - iuvity-network
+      - bussines-network
     restart: unless-stopped
     environment: # <-- ADD THIS BLOCK
       - BACKEND_HOST=backend # Docker Compose service name for the backend
@@ -51,7 +51,7 @@ services:
     volumes:
       - sqlpreview-data:/var/opt/mssql
     networks:
-      - iuvity-network
+      - bussines-network
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "yourStrong#Password", "-Q", "SELECT 1" ]
@@ -61,7 +61,7 @@ services:
       start_period: 45s
 
 networks:
-  iuvity-network:
+  bussines-network:
     driver: bridge
 
 volumes:
